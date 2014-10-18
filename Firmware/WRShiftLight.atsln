@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "WRShiftLight", "WRShiftLight\WRShiftLight.cproj", "{D03C07BA-46CC-4220-98EE-721D637DD16E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D03C07BA-46CC-4220-98EE-721D637DD16E}.Debug|AVR.ActiveCfg = Debug|AVR
+		{D03C07BA-46CC-4220-98EE-721D637DD16E}.Debug|AVR.Build.0 = Debug|AVR
+		{D03C07BA-46CC-4220-98EE-721D637DD16E}.Release|AVR.ActiveCfg = Release|AVR
+		{D03C07BA-46CC-4220-98EE-721D637DD16E}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

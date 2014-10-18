@@ -72,7 +72,7 @@ inline void setupInterrupt()
 
 inline void setupCylinderCount()
 {
-	// Do this as a macro that gets done once for each case so that we don't have to do an actual multiply/divide at runtime
+	// Do this as a macro that gets done once for each case so that we don't have to do an actual multiply/divide at runtime (let the preprocessor do it)
 	#define CALC_CYL_COUNT rpm_per_pulse_per_sec = 2 * COUNTER_FREQ * SECONDS_PER_MINUTE / cylCount
 	
 	// Read cylinder selection inputs
@@ -134,7 +134,21 @@ int main(void)
 	
 	// Setup LEDS
 	setupLeds();
+	
+	// Blink each led for 500ms down the line from low -> high on the RPM scale
+	while(1)
+	{
+		int ledval = 1;
 		
+		while(ledval != 0)
+		{
+			setLeds(ledval);
+			__delay_ms(500);
+			
+			ledval = ledval << 1;
+		}
+	}
+	
 	// Two second blink
 	setLeds(0xFF);
 	_delay_ms(2000);

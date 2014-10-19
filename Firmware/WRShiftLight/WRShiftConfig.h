@@ -13,13 +13,13 @@
 //     LED Activation Points
 // ******************************
 
-#define LED_0_POINT 500
-#define LED_1_POINT 1000
-#define LED_2_POINT 2000
-#define LED_3_POINT 3000
-#define LED_4_POINT 4000
-#define LED_5_POINT 5000
-#define LED_6_POINT 6000
+#define LED_0_POINT 1000
+#define LED_1_POINT 2000
+#define LED_2_POINT 3000
+#define LED_3_POINT 4000
+#define LED_4_POINT 5000
+#define LED_5_POINT 6000
+#define LED_6_POINT 6500
 #define LED_7_POINT 6500
 
 // ******************************
@@ -74,9 +74,11 @@
 //      Engine & Timer Config
 // ******************************
 
+#define CYLINDER_COUNT 6
+
 #define SECONDS_PER_MINUTE 60
 #define COUNTER_FREQ 1000000
-
+#define RPM_PER_PULSE_PER_SEC (2 * COUNTER_FREQ * SECONDS_PER_MINUTE / CYLINDER_COUNT)
 
 
 #define WDR() {__asm__ __volatile__ ("wdr");}

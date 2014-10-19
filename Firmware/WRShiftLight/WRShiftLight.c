@@ -20,11 +20,11 @@
 {								\
 	if(on)						\
 	{							\
-		port |= _BV(pin);		\
+		port &= ~_BV(pin);		\
 	}							\
 	else						\
 	{							\
-		port &= ~_BV(pin);		\
+		port |= _BV(pin);		\
 	}							\
 }
 
@@ -70,49 +70,6 @@ inline void setupInterrupt()
 	GIMSK |= _BV(INT0);
 }
 
-inline void setupCylinderCount()
-{
-	// Do this as a macro that gets done once for each case so that we don't have to do an actual multiply/divide at runtime (let the preprocessor do it)
-	#define CALC_CYL_COUNT rpm_per_pulse_per_sec = 2 * COUNTER_FREQ * SECONDS_PER_MINUTE / cylCount
-	
-	// Read cylinder selection inputs
-	uint8_t cylCount;
-	
-	// Set all to input
-	SEL_4_CYL_DDR &= ~_BV(SEL_4_CYL_PIN);
-	SEL_6_CYL_DDR &= ~_BV(SEL_6_CYL_PIN);
-	SEL_8_CYL_DDR &= ~_BV(SEL_8_CYL_PIN);
-	
-	// Enable pullups
-	SEL_4_CYL_PORT |= _BV(SEL_4_CYL_PIN);
-	SEL_6_CYL_PORT |= _BV(SEL_6_CYL_PIN);
-	SEL_8_CYL_PORT |= _BV(SEL_8_CYL_PIN);
-	
-	// Get away, capacitance!
-	_delay_ms(5);
-	
-	if(GET(SEL_4_CYL_PINS, SEL_4_CYL_PIN))
-	{
-		cylCount = 4;
-		CALC_CYL_COUNT;
-	}
-	else if(GET(SEL_6_CYL_PINS, SEL_6_CYL_PIN))
-	{
-		cylCount = 6;
-		CALC_CYL_COUNT;
-	}
-	else if(GET(SEL_8_CYL_PINS, SEL_8_CYL_PIN))
-	{
-		cylCount = 8;
-		CALC_CYL_COUNT;
-	}
-	else			// Default to 1, I guess?
-	{
-		cylCount = 1;
-		CALC_CYL_COUNT;
-	}
-}
-
 void setupLeds()
 {
 	// Set all to output
@@ -135,20 +92,6 @@ int main(void)
 	// Setup LEDS
 	setupLeds();
 	
-	// Blink each led for 500ms down the line from low -> high on the RPM scale
-	while(1)
-	{
-		int ledval = 1;
-		
-		while(ledval != 0)
-		{
-			setLeds(ledval);
-			__delay_ms(500);
-			
-			ledval = ledval << 1;
-		}
-	}
-	
 	// Two second blink
 	setLeds(0xFF);
 	_delay_ms(2000);
@@ -158,13 +101,6 @@ int main(void)
 	
 	setupInterrupt();
 
-	setupCylinderCount();
-
-	// Reset watchdog
-	WDR();
-	
-	// Enable the watchdog with 500ms time
-	wdt_enable(WDTO_500MS);
 	// Enable interrupts
 	sei();
 	
@@ -174,58 +110,62 @@ int main(void)
 
 ISR(INT0_vect)
 {
-	cli();
-	// Reset the watchdog so we don't reboot
-	WDR();
-	
-	// Grab the timer count
-	uint16_t count = TCNT1;
-	TCNT1 = 0;
-	// Calculate engine RPM
-	uint16_t rpm =  (rpm_per_pulse_per_sec) / count;
-	
-	// Set the LEDs
-	uint8_t leds = 0;
-	
-	if(rpm > LED_0_POINT)
+	if(PIND & _BV(PIND2))
 	{
-		leds |= _BV(0);
+		cli();
+		// Reset the watchdog so we don't reboot
+		//WDR();
+		
+		// Grab the timer count
+		uint16_t count = TCNT1;
+		TCNT1 = 0;
+		// Calculate engine RPM
+		uint16_t rpm =  RPM_PER_PULSE_PER_SEC / count;
+		
+		// Set the LEDs
+		uint8_t leds = 0;
+		
+		if(rpm > LED_0_POINT)
+		{
+			leds |= _BV(0);
+		}
+		
+		if(rpm > LED_1_POINT)
+		{
+			leds |= _BV(1);
+		}
+		
+		if(rpm > LED_2_POINT)
+		{
+			leds |= _BV(2);
+		}
+		
+		if(rpm > LED_3_POINT)
+		{
+			leds |= _BV(3);
+		}
+		
+		if(rpm > LED_4_POINT)
+		{
+			leds |= _BV(4);
+		}
+		
+		if(rpm > LED_5_POINT)
+		{
+			leds |= _BV(5);
+		}
+		
+		if(rpm > LED_6_POINT)
+		{
+			leds |= _BV(6);
+		}
+		
+		if(rpm > LED_7_POINT)
+		{
+			leds |= _BV(7);
+		}
+		
+		setLeds(leds);
 	}
-	
-	if(rpm > LED_1_POINT)
-	{
-		leds |= _BV(1);
-	}
-	
-	if(rpm > LED_2_POINT)
-	{
-		leds |= _BV(2);
-	}
-	
-	if(rpm > LED_3_POINT)
-	{
-		leds |= _BV(3);
-	}
-	
-	if(rpm > LED_4_POINT)
-	{
-		leds |= _BV(4);
-	}
-	
-	if(rpm > LED_5_POINT)
-	{
-		leds |= _BV(5);
-	}
-	
-	if(rpm > LED_6_POINT)
-	{
-		leds |= _BV(6);
-	}
-	
-	if(rpm > LED_7_POINT)
-	{
-		leds |= _BV(7);
-	}
-	
-	setLeds(leds);
 }
+
